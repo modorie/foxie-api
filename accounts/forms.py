@@ -33,7 +33,7 @@ class CustomUserCreationForm(forms.ModelForm):
             }
         )
     )
-    password1 = forms.CharField(
+    password = forms.CharField(
         label=_('Password'),
         widget=forms.PasswordInput(
             attrs={
@@ -43,7 +43,7 @@ class CustomUserCreationForm(forms.ModelForm):
             }
         )
     )
-    password2 = forms.CharField(
+    passwordConfirmation = forms.CharField(
         label=_('Password confirmation'),
         widget=forms.PasswordInput(
             attrs={
@@ -59,11 +59,11 @@ class CustomUserCreationForm(forms.ModelForm):
         fields = ('email', 'nickname',)
 
     def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
+        password = self.cleaned_data.get("password")
+        password_confirmation = self.cleaned_data.get("passwordConfirmation")
+        if password and password_confirmation and password != password_confirmation:
             raise forms.ValidationError("Passwords don't match")
-        return password2
+        return password_confirmation
 
     def save(self, commit=True):
         user = super(CustomUserCreationForm, self).save(commit=False)
