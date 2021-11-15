@@ -139,5 +139,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Django - Vue.js CORS
 CORS_ORIGIN_ALLOW_ALL = True
 
+"""
+TODO: 특정 Origin만 선택적으로 허용
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000"
+]
+"""
+
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+}
