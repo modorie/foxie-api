@@ -35,13 +35,25 @@ INSTALLED_APPS = [
     'articles',
     'accounts',
     
-    # Third Party Apps
-    'django_extensions',
+
+    # Django Rest Framework
     'drf_yasg',
     'rest_framework',
+    'rest_framework.authtoken',
+
+    # DJango Rest Auth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+    # Third Party Apps
+    'django_extensions',
     'corsheaders',
 
     # Django apps
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,11 +164,36 @@ CORS_ALLOWED_ORIGINS = [
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+# Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
+
+REST_USE_JWT = True
+
+
+# Rest Auth Custom
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer',
+}
+
+SITE_ID = 1
