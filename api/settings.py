@@ -32,16 +32,15 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Local
-    'articles',
     'accounts',
-    
+    'community',
 
     # Django Rest Framework
     'drf_yasg',
     'rest_framework',
     'rest_framework.authtoken',
 
-    # DJango Rest Auth
+    # Django Rest Auth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
