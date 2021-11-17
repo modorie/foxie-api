@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     # Local
     'accounts',
     'community',
+    'movies',
 
     # Django Rest Framework
     'drf_yasg',
