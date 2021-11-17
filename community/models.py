@@ -7,8 +7,16 @@ class Article(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_articles', null=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='%(app_label)s_%(class)s',
+    )
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='%(app_label)s_%(class)s_likes',
+        blank=True
+    )
 
     def __str__(self):
         return f'{self.title}'
@@ -19,8 +27,16 @@ class Comment(models.Model):
     content = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_community_comments', null=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='%(app_label)s_%(class)s',
+    )
+    like_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='%(app_label)s_%(class)s_likes',
+        blank=True
+    )
 
     def __str__(self):
         return f'{self.content}'
