@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import Movie, Review, Comment
+from .serializers.actor import ActorSerializer
+from .serializers.director import DirectorSerializer
 from .serializers.movie import MovieSerializer, MovieListSerializer
 from .serializers.review import ReviewSerializer, CommentSerializer
 
@@ -19,6 +21,22 @@ def movie_list(request):
 def movie_detail(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     serializer = MovieSerializer(movie)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def movie_detail_actors(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    actors = movie.actors.all()
+    serializer = ActorSerializer(actors, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def movie_detail_directors(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    directors = movie.directors.all()
+    serializer = DirectorSerializer(directors, many=True)
     return Response(serializer.data)
 
 
