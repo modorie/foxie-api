@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/v1/', include('community.urls')),
 
     path('accounts/', include('dj_rest_auth.urls')),
+    path('accounts/', include('allauth.urls')),
     path('accounts/registration/', include('dj_rest_auth.registration.urls')),
 
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
