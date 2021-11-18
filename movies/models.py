@@ -1,11 +1,16 @@
 from django.db import models
 from django.conf import settings
 
+from django.contrib.postgres.fields import ArrayField
+
 
 class Actor(models.Model):  # cast
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     profile_path = models.TextField(null=True)
+    also_known_as = ArrayField(
+        models.CharField(max_length=30),
+    )
 
     def __str__(self):
         return f'{self.id}: {self.name}'
@@ -15,6 +20,9 @@ class Director(models.Model):  # crew
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     profile_path = models.TextField(null=True)
+    also_known_as = ArrayField(
+        models.CharField(max_length=30),
+    )
 
     def __str__(self):
         return f'{self.id}: {self.name}'
