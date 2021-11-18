@@ -1,16 +1,13 @@
 import requests
 import environ
 import json
-import re
 
 from tmdb_helper import TMDBHelper
 
-j = 1
 
 def get_popular_movies():
-    global j
     tmdb_helper = TMDBHelper(TMDB_API_KEY)
-    popular_movies = []
+    movies_data = []
 
     for i in range(1, 501):
         request_url = tmdb_helper.get_request_url(region='KR', language='ko', page=i)
@@ -18,8 +15,6 @@ def get_popular_movies():
         data = []
         for movie in movies:
             movie_id = movie.get('id')
-            j += 1
-            print(f"{j} {movie.get('title')}")
             credits_request_url = tmdb_helper.get_request_url(method=f'/movie/{movie_id}/credits', language='ko')
             casts_and_crews = requests.get(credits_request_url).json()
 
@@ -51,22 +46,18 @@ def get_popular_movies():
             }
             data.append(record)
 
-        popular_movies.extend(data)
-    return popular_movies
+        movies_data.extend(data)
+    return movies_data
 
 
 def get_people(person_ids, model):
     tmdb_helper = TMDBHelper(TMDB_API_KEY)
     people = []
-    i = 1
 
     for person_id in person_ids:
         request_url = tmdb_helper.get_request_url(method=f'/person/{person_id}', language='ko')
         person = requests.get(request_url).json()
         name = person.get('name')
-
-        print(f"{i} {name}")
-        i += 1
 
         record = {
             'model': f'movies.{model}',
@@ -89,7 +80,6 @@ def write_json_file(filename, content):
 
 
 if __name__ == '__main__':
-    # TMDB API Key 불러오기
     env = environ.Env()
     environ.Env.read_env()
     TMDB_API_KEY = env('TMDB_API_KEY')
