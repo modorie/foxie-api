@@ -9,7 +9,7 @@ from .serializers import ProfileSerializer
 
 @api_view(['GET', 'PUT'])
 def profile_detail_or_update(request, username):
-    profile = get_object_or_404(Profile, username=username)
+    profile = get_object_or_404(Profile, user__username=username)
 
     if request.method == 'GET':
         serializer = ProfileSerializer(profile)
@@ -27,7 +27,7 @@ def follow(request, username):
     me = get_object_or_404(Profile, username=request.user.username)
     you = get_object_or_404(Profile, username=username)
     if me != you:
-        if you.followers.filter(username=me.username).exists():
+        if you.followers.filter(username=me.user.username).exists():
             you.followers.remove(me)
         else:
             you.followers.add(me)
