@@ -14,20 +14,20 @@ class User(AbstractUser):
 
 
 class Profile(models.Model):
-    username = models.OneToOneField(
+    user = models.OneToOneField(
         User,
         primary_key=True,
-        to_field='username',
         on_delete=models.CASCADE,
         related_name='profile'
     )
-    nickname = models.CharField(max_length=30, null=True)
+
+    nickname = models.CharField(max_length=30, blank=True)
+    avatar = models.ImageField(null=True, upload_to='avatars/')
     tags = ArrayField(
         models.CharField(max_length=10),
-        blank=True,
         null=True,
     )
-    content = models.TextField(null=True, blank=True)
+    content = models.TextField(blank=True)
     followers = models.ManyToManyField('self', symmetrical=False, related_name='followings')
 
     def __str__(self):
