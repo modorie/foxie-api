@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import JSONField
 
 
 class Actor(models.Model):  # cast
@@ -64,9 +65,20 @@ class Movie(models.Model):
     backdrop_path = models.TextField(null=True)
     poster_path = models.TextField(null=True)
     video = models.BooleanField(default=False)
+    videos = JSONField(blank=True)
 
     def __str__(self):
         return f'{self.id}: {self.title}'
+
+
+class Casting(models.Model):
+    movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    actor_id = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='castings')
+    credit_id = models.CharField(primary_key=True, max_length=30)
+    character = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'{self.movie_id.title} : {self.actor_id.name} ({self.character} 역)'
 
 
 class Review(models.Model):
