@@ -7,7 +7,6 @@ from tmdb_helper import TMDBHelper
 
 def get_popular_movies():
     tmdb_helper = TMDBHelper(TMDB_API_KEY)
-    movies_data = []
 
     for i in range(1, 501):
         request_url = tmdb_helper.get_request_url(region='KR', language='ko', page=i)
@@ -27,18 +26,49 @@ def get_popular_movies():
             }
 
             for actor in actors:
-                actor_id = actor.get('id')
-                result['actors'].append(actor_id)
-                actor_ids.add(actor_id)
+                if actor.get('order') < 10:
+                    actor_id = actor.get('id')
+
+                    castings.append({
+                        'model': 'movies.casting',
+                        'fields': {
+                            'movie_id': movie_id,
+                            'actor_id': actor_id,
+                            'credit_id': actor.get('credit_id'),
+                            'character': actor.get('character'),
+                        }
+                    })
+                    result['actors'].append(actor_id)
+                    actor_ids.add(actor_id)
+                else:
+                    break
 
             for staff in staffs:
-                if staff.get('department') == 'Directing':
+                if staff.get('job') == 'Director':
                     director_id = staff.get('id')
                     result['directors'].append(director_id)
                     director_ids.add(director_id)
+                    break
 
             movie['actors'] = result['actors']
             movie['directors'] = result['directors']
+
+            videos_request_url = tmdb_helper.get_request_url(method=f'/movie/{movie_id}/videos', language='ko')
+            videos = requests.get(videos_request_url).json().get('results')
+
+            video_list = []
+
+            for video in videos:
+                if video.get('type') == 'Trailer':
+                    video_data = {
+                        'name': video.get('name'),
+                        'key': video.get('key'),
+                        'site': video.get('site'),
+                        'type': video.get('type')
+                    }
+                    video_list.append(video_data)
+                    print(f'\t\t\t {video.get("name")}')
+            movie['videos'] = video_list
 
             record = {
                 'model': 'movies.movie',
@@ -46,8 +76,7 @@ def get_popular_movies():
             }
             data.append(record)
 
-        movies_data.extend(data)
-    return movies_data
+        popular_movies.extend(data)
 
 
 def get_people(person_ids, model):
@@ -87,8 +116,12 @@ if __name__ == '__main__':
     actor_ids = set()
     director_ids = set()
 
-    popular_movies = get_popular_movies()
+    popular_movies = []
+    castings = []
+
+    get_popular_movies()
     write_json_file('../fixtures/movies.json', popular_movies)
+    write_json_file('../fixtures/castings.json', castings)
 
     actors = get_people(actor_ids, 'actor')
     directors = get_people(director_ids, 'director')
@@ -100,4 +133,4 @@ if __name__ == '__main__':
     print(f'actors : {len(actors)}')
     print(f'directors : {len(directors)}')
     print('-----------------------------------------------------------')
-    print('컴퓨터 고생 많았다.')
+
