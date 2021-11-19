@@ -75,7 +75,7 @@ class Casting(models.Model):
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
     actor_id = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='castings')
     credit_id = models.CharField(primary_key=True, max_length=30)
-    character = models.CharField(max_length=100)
+    character = models.TextField(null=True)
 
     def __str__(self):
         return f'{self.movie_id.title} : {self.actor_id.name} ({self.character} 역)'
