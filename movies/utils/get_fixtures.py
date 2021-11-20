@@ -8,12 +8,20 @@ from tmdb_helper import TMDBHelper
 def get_popular_movies():
     tmdb_helper = TMDBHelper(TMDB_API_KEY)
 
+    print('Popular Movies')
+    print('-----------------------------------------------------------')
+    cnt = 1
+
     for i in range(1, 501):
         request_url = tmdb_helper.get_request_url(region='KR', language='ko', page=i)
         movies = requests.get(request_url).json().get('results')
         data = []
         for movie in movies:
             movie_id = movie.get('id')
+
+            print(f'#{cnt} {movie.get("title")}')
+            cnt += 1
+
             credits_request_url = tmdb_helper.get_request_url(method=f'/movie/{movie_id}/credits', language='ko')
             casts_and_crews = requests.get(credits_request_url).json()
 
@@ -67,7 +75,7 @@ def get_popular_movies():
                         'type': video.get('type')
                     }
                     video_list.append(video_data)
-                    print(f'\t\t\t {video.get("name")}')
+
             movie['videos'] = video_list
 
             record = {
@@ -82,11 +90,17 @@ def get_popular_movies():
 def get_people(person_ids, model):
     tmdb_helper = TMDBHelper(TMDB_API_KEY)
     people = []
+    cnt = 1
+
+    print(model)
+    print('-----------------------------------------------------------')
 
     for person_id in person_ids:
         request_url = tmdb_helper.get_request_url(method=f'/person/{person_id}', language='ko')
         person = requests.get(request_url).json()
         name = person.get('name')
+        print(f'#{cnt} {name}')
+        cnt += 1
 
         record = {
             'model': f'movies.{model}',
@@ -123,13 +137,19 @@ if __name__ == '__main__':
     write_json_file('../fixtures/movies.json', popular_movies)
     write_json_file('../fixtures/castings.json', castings)
 
+    print('\n')
+
     actors = get_people(actor_ids, 'actor')
+
+    print('\n')
+
     directors = get_people(director_ids, 'director')
 
     write_json_file('../fixtures/actors.json', actors)
     write_json_file('../fixtures/directors.json', directors)
 
     print('-----------------------------------------------------------')
+    print(f'popular_movies : {len(popular_movies)}')
     print(f'actors : {len(actors)}')
     print(f'directors : {len(directors)}')
     print('-----------------------------------------------------------')

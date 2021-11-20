@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 from django_seed import Seed
 from django.contrib.auth import get_user_model
 
+import random
+
 from accounts.models import Profile
 
 User = get_user_model()
@@ -38,6 +40,7 @@ class Command(BaseCommand):
 
         for profile in profiles:
             profile.nickname = profile.user.username
+            profile.followers.add(random.choice(profiles))
             profile.save()
 
         self.stdout.write(self.style.SUCCESS(f"{number} 명의 유저가 작성되었습니다."))
