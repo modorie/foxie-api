@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'django_extensions',
+    'django_seed',
     'corsheaders',
 
     # Django apps
