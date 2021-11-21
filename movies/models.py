@@ -66,7 +66,10 @@ class Movie(models.Model):
     poster_path = models.TextField(null=True)
     video = models.BooleanField(default=False)
     videos = JSONField(blank=True)
-    recommendations = models.ManyToManyField('self', symmetrical=False)
+    recommendations = ArrayField(
+        models.IntegerField(),
+        blank=True
+    )
 
     def __str__(self):
         return f'{self.id}: {self.title}'

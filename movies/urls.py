@@ -13,4 +13,8 @@ urlpatterns = [
 
     path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/', views.review_comment_create_or_list),
     path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/<int:comment_pk>/', views.review_comment_detail_or_update_delete),
-]
+
+    path('movies/recommendations/followings', views.recommendations_by_followings),
+    path('movies/recommendations/actors', views.recommendations_by_actors),
+    path('movies/recommendations/movies', views.recommendations_by_movies),
+    ]
