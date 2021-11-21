@@ -1,14 +1,23 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
+
+from collections import defaultdict
 
 from .models import Movie, Actor, Casting, Review, Comment
 from .serializers.actor import ActorSerializer
 from .serializers.director import DirectorSerializer
 from .serializers.movie import MovieSerializer, MovieListSerializer
 from .serializers.review import ReviewSerializer, CommentSerializer
+
+
+User = get_user_model()
 
 
 @api_view(['GET'])
@@ -103,6 +112,7 @@ def review_comment_detail_or_update_delete(request, review_pk, comment_pk):
     if request.method == 'GET':
         serializer = CommentSerializer(review)
         return Response(serializer.data)
+
     elif request.method == 'PUT':
         serializer = CommentSerializer(data=request.data, instance=comment)
         if serializer.is_valid(raise_exception=True):
@@ -111,3 +121,91 @@ def review_comment_detail_or_update_delete(request, review_pk, comment_pk):
     else:
         review.delete()
         return Response('Delete success', status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+# TODO: 가입한 유저만 볼 수 있도록 변경
+@permission_classes([AllowAny])
+@renderer_classes([JSONRenderer])
+def recommendations_by_followings(request):
+    # TODO: request.user로 변경
+    target_user = User.objects.get(id=78)
+
+    followings = target_user.profile.followings.all()
+    my_reviews = target_user.movies_review.all()
+
+    recommend_list = []
+
+    for following in followings:
+        recommendations = []
+        for review in following.user.movies_review.filter(rank__gte=8):
+            if not my_reviews.filter(movie=review.movie).exists():
+                recommendations.append({
+                    'movie': review.movie.id,
+                    'rank': review.rank,
+                })
+        recommend_list.append({
+            'target_user_id': following.user.id,
+            'recommendations': recommendations,
+        })
+
+    return Response(recommend_list)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+@renderer_classes([JSONRenderer])
+def recommendations_by_actors(request):
+    target_user = User.objects.get(id=78)
+    my_reviews = target_user.movies_review.filter(rank__gte=8)
+    recommend_list = []
+
+    for review in my_reviews:
+        target_movie = review.movie.id
+        recommends = []
+
+        for actor in review.movie.actors.all():
+            result_movies = actor.movies.filter(~Q(id=target_movie))
+            movie_list = []
+            for result_movie in result_movies:
+                if not target_user.movies_review.filter(movie=result_movie.id).exists():
+                    movie_list.append(result_movie.id)
+
+            if movie_list:
+                recommends.append({
+                    'actor': actor.id,
+                    'movies': movie_list
+                })
+        recommend_list.append({
+            'target_movie': target_movie,
+            'rank': review.rank,
+            'recommendations': recommends,
+        })
+
+    return Response(recommend_list)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+@renderer_classes([JSONRenderer])
+def recommendations_by_movies(request):
+    target_user = User.objects.get(id=78)
+    my_reviews = target_user.movies_review.filter(rank__gte=8)
+    recommend_list = []
+
+    for review in my_reviews:
+        target_movie = review.movie.id
+        recommendations = []
+
+        for movie in review.movie.recommendations:
+            if Movie.objects.filter(id=movie).exists():
+                if not target_user.movies_review.filter(id=movie).exists():
+                    recommendations.append(movie)
+
+        recommend_list.append({
+            'target_movie': target_movie,
+            'rank': review.rank,
+            'recommendations': recommendations,
+        })
+
+    return Response(recommend_list)
