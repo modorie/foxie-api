@@ -25,15 +25,19 @@ def article_create(request):
         return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def article_detail_or_update_or_delete(request, article_pk):
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def article_detail(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    serializer = ArticleSerializer(article)
+    return Response(serializer.data)
+
+
+@api_view(['PUT', 'DELETE'])
+def article_update_or_delete(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
 
-    if request.method == 'GET':
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         serializer = ArticleSerializer(data=request.data, instance=article)
         if serializer.is_valid(raise_exception=True):
             serializer.save()

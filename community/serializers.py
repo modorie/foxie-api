@@ -1,11 +1,28 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Article, Comment
+from accounts.models import Profile
 
 User = get_user_model()
 
 
 class CommentSerializer(serializers.ModelSerializer):
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
+        class Meta:
+            model = User
+            fields = ('id', 'username', 'profile')
+
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Comment
@@ -13,11 +30,28 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
+        class Meta:
+            model = User
+            fields = ('id', 'username', 'profile')
+
+    author = UserSerializer(read_only=True)
+
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Article
-        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author',)
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author', 'comments')
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
