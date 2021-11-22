@@ -76,9 +76,9 @@ class Movie(models.Model):
 
 
 class Casting(models.Model):
-    movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    actor_id = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='castings')
-    credit_id = models.CharField(primary_key=True, max_length=30)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='castings')
+    actor = models.ForeignKey(Actor, on_delete=models.CASCADE, related_name='castings')
+    credit_id = models.CharField(max_length=30)
     character = models.TextField(null=True)
 
     def __str__(self):
