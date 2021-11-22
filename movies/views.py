@@ -33,6 +33,7 @@ def movie_detail(request, movie_pk):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def review_create_or_list(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
 
