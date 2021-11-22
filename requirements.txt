@@ -2,6 +2,7 @@ asgiref==3.4.1
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.7
+config==0.5.1
 coreapi==2.3.3
 coreschema==0.0.4
 cryptography==35.0.0
