@@ -1,10 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
-
 from rest_framework import serializers
-
 from .models import Profile
-from movies.models import Review
 
 User = get_user_model()
 
