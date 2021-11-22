@@ -3,6 +3,7 @@ from django_seed import Seed
 from django.contrib.auth import get_user_model
 
 import random
+import datetime
 
 from community.models import Article, Comment
 
@@ -32,6 +33,8 @@ class Command(BaseCommand):
             number,
             {
                 "author": lambda x: random.choice(users),
+                "created_at": datetime.datetime.now(),
+                "updated_at": datetime.datetime.now(),
             }
         ),
 
@@ -50,6 +53,8 @@ class Command(BaseCommand):
             {
                 "article": lambda x: random.choice(articles),
                 "author": lambda x: random.choice(users),
+                "created_at": datetime.datetime.now(),
+                "updated_at": datetime.datetime.now(),
             }
         )
 
