@@ -15,7 +15,6 @@ django-environ==0.8.1
 django-extensions==3.1.5
 django-seed==0.3.1
 djangorestframework==3.12.4
-djangorestframework-jwt==1.11.0
 djangorestframework-simplejwt==5.0.0
 drf-yasg==1.20.0
 Faker==9.8.2
