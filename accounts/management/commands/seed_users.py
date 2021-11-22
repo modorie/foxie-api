@@ -3,6 +3,7 @@ from django_seed import Seed
 from django.contrib.auth import get_user_model
 
 import random
+from faker import Faker
 
 from accounts.models import Profile
 
@@ -32,15 +33,20 @@ class Command(BaseCommand):
                 "is_active": True,
                 "email": lambda x: seeder.faker.email(),
                 "password": lambda x: seeder.faker.password(),
+                "last_login": None
             }
         ),
         seeder.execute()
 
         profiles = Profile.objects.all()
+        fake = Faker()
 
         for profile in profiles:
             profile.nickname = profile.user.username
-            profile.followers.add(random.choice(profiles))
+            profile.tags = fake.words()
+            profile.content = fake.sentence()
+            for follower in random.choices(profiles, k=random.randint(0, 5)):
+                profile.followers.add(follower)
             profile.save()
 
         self.stdout.write(self.style.SUCCESS(f"{number} 명의 유저가 작성되었습니다."))

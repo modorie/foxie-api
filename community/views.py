@@ -1,25 +1,28 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from .models import Article, Comment
 from .serializers import ArticleSerializer, ArticleListSerializer, CommentSerializer
 
 
-@api_view(['GET', 'POST'])
-def article_create_or_list(request):
-    if request.method == 'GET':
-        articles = Article.objects.all()
-        serializer = ArticleListSerializer(articles, many=True)
-        return Response(serializer.data)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def article_list(request):
+    articles = Article.objects.order_by('-pk')
+    serializer = ArticleListSerializer(articles, many=True)
+    return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = ArticleSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+
+@api_view(['POST'])
+def article_create(request):
+    serializer = ArticleSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

@@ -5,7 +5,8 @@ app_name = 'community'
 urlpatterns = [
     # POST /articles/
     # GET /articles/
-    path('community/', views.article_create_or_list),
+    path('community/', views.article_list),
+    path('community/', views.article_create),
     # GET /articles/1/
     # PUT /articles/1/
     # DELETE /articles/1/

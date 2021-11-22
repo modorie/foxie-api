@@ -8,9 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
-from collections import defaultdict
-
-from .models import Movie, Actor, Casting, Review, Comment
+from .models import Movie, Review, Comment
 from .serializers.actor import ActorSerializer
 from .serializers.director import DirectorSerializer
 from .serializers.movie import MovieSerializer, MovieListSerializer
