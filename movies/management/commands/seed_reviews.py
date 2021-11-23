@@ -3,6 +3,7 @@ from django_seed import Seed
 from django.contrib.auth import get_user_model
 
 import random
+import datetime
 
 from movies.models import Review, Comment, Movie
 
@@ -56,6 +57,8 @@ class Command(BaseCommand):
             {
                 "review": lambda x: random.choice(reviews),
                 "author": lambda x: random.choice(users),
+                "created_at": datetime.datetime.now(),
+                "updated_at": datetime.datetime.now(),
             }
         )
 

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Article, Comment
+from accounts.models import Profile
 
 User = get_user_model()
 
@@ -9,15 +10,36 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'content', 'author', 'created_at', 'updated_at',)
+        fields = '__all__'
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
+        class Meta:
+            model = User
+            fields = ('id', 'username', 'profile')
+
+    author = UserSerializer()
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'author', 'created_at', 'updated_at')
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Article
-        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author',)
+        fields = '__all__'
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
@@ -40,3 +62,34 @@ class ArticleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ('id', 'title', 'author', 'comments_count', 'created_at', 'likes_count')
+
+
+class ArticleViewSerializer(serializers.ModelSerializer):
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
+        class Meta:
+            model = User
+            fields = ('id', 'username', 'profile', 'community_article', 'community_comment')
+
+    class CommentSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = Comment
+            fields = ('id',)
+
+    author = UserSerializer(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Article
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at', 'author', 'like_users', 'comments')
+
