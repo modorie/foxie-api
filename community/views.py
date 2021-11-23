@@ -4,49 +4,46 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Article, Comment
 from .serializers import ArticleSerializer, ArticleViewSerializer, ArticleListSerializer, CommentSerializer, CommentListSerializer
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
-def article_list(request):
-    articles = Article.objects.order_by('-pk')
-    serializer = ArticleListSerializer(articles, many=True)
-    return Response(serializer.data)
+def article_list_or_create(request):
+    if request.method == 'GET':
+        articles = Article.objects.order_by('-pk')
+        serializer = ArticleListSerializer(articles, many=True)
+        return Response(serializer.data)
+    else:
+        if request.user and request.user.is_authenticated:
+            serializer = ArticleSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
 
 
-@api_view(['POST'])
-def article_create(request):
-    serializer = ArticleSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])
+def article_detail_update_or_delete(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+
+    if request.method == 'GET':
+        serializer = ArticleViewSerializer(article)
         return Response(serializer.data)
 
+    elif request.user and request.user.is_authenticated:
+        if request.method == 'PUT':
+            serializer = ArticleSerializer(data=request.data, instance=article)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def article_detail(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-    serializer = ArticleViewSerializer(article)
-    return Response(serializer.data)
-
-
-@api_view(['PUT', 'DELETE'])
-def article_update_or_delete(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-
-    if request.method == 'PUT':
-        serializer = ArticleSerializer(data=request.data, instance=article)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-
-    else:
-        article.delete()
-        return Response('delete success', status=status.HTTP_204_NO_CONTENT)
+        else:
+            article.delete()
+            return Response('delete success', status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])
@@ -67,22 +64,21 @@ def article_likes(request, article_pk):
     return Response(data)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
-def comment_list(request, article_pk):
+def comment_list_or_create(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    comments = article.comments.all()
-    serializer = CommentListSerializer(comments, many=True)
-    return Response(serializer.data)
 
+    if request.method == 'GET':
+        comments = article.comments.all()
+        serializer = CommentListSerializer(comments, many=True)
+        return Response(serializer.data)
 
-@api_view(['POST'])
-def comment_create(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(article=article, author=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    elif request.user and request.user.is_authenticated:
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(article=article, author=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['PUT', 'DELETE'])
