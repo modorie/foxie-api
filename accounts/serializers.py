@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Subquery
 
 from rest_framework import serializers
-import json
+from drf_extra_fields.fields import Base64ImageField
 
 from .models import Profile
 from movies.models import Movie
@@ -19,6 +19,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = ('user', 'nickname', 'avatar', 'tags', 'content')
+
+
+class ProfileViewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     reviews = serializers.SerializerMethodField()
     movies = serializers.SerializerMethodField()
@@ -33,4 +40,4 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('user', 'nickname', 'avatar', 'tags', 'content', 'followers', 'reviews', 'movies')
+        fields = ('user', 'nickname', 'avatar', 'tags', 'content', 'followers', 'followings', 'reviews', 'movies')

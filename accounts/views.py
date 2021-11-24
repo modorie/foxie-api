@@ -6,7 +6,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, ProfileViewSerializer
+
+
+@api_view(['POST'])
+def profile_create(request):
+    serializer = ProfileSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT'])
@@ -15,10 +23,10 @@ def profile_detail_or_update(request, username):
     profile = get_object_or_404(Profile, user__username=username)
 
     if request.method == 'GET':
-        serializer = ProfileSerializer(profile)
+        serializer = ProfileViewSerializer(profile)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    elif request.user and request.user.is_authenticated:
         serializer = ProfileSerializer(data=request.data, instance=profile)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -27,11 +35,17 @@ def profile_detail_or_update(request, username):
 
 @api_view(['POST'])
 def follow(request, username):
-    me = get_object_or_404(Profile, username=request.user.username)
-    you = get_object_or_404(Profile, username=username)
+    me = get_object_or_404(Profile, user__username=request.user.username)
+    you = get_object_or_404(Profile, user__username=username)
     if me != you:
-        if you.followers.filter(username=me.user.username).exists():
+        if you.followers.filter(user__username=me.user.username).exists():
             you.followers.remove(me)
         else:
             you.followers.add(me)
-    return Response('Success', status=status.HTTP_200_OK)
+
+    data = {
+        'follow_count': len(you.followers.all()),
+        'is_followed': you.followers.filter(user__username=me.user.username).exists()
+    }
+
+    return Response(data, status=status.HTTP_200_OK)
