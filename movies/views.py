@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
 from .models import Movie, Actor, Review, Comment
-from .serializers.movie import MovieSerializer, MovieListSerializer
-from .serializers.review import ReviewSerializer, CommentSerializer
+from .serializers.movie import MovieListSerializer, MovieSerializer
+from .serializers.review import ReviewListSerializer, ReviewSerializer, ReviewViewSerializer
 
 
 User = get_user_model()
@@ -38,68 +38,91 @@ def review_create_or_list(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
 
     if request.method == 'GET':
-        reviews = movie.reviews.all()
-        serializer = ReviewSerializer(reviews, many=True)
+        reviews = movie.reviews.order_by('-pk')
+        serializer = ReviewListSerializer(reviews, many=True)
         return Response(serializer.data)
 
-    else:
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(movie=movie)
-            return Response(serializer.data)
+    elif request.user and request.user.is_authenticated:
+        if request.method == 'POST':
+            serializer = ReviewSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(movie=movie)
+                return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])
 def review_detail_or_update_delete(request, movie_pk, review_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     review = get_object_or_404(Review, pk=review_pk)
 
     if request.method == 'GET':
-        serializer = ReviewSerializer(review)
+        serializer = ReviewViewSerializer(review)
         return Response(serializer.data)
-    elif request.method == 'PUT':
-        serializer = ReviewSerializer(data=request.data, instance=review)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-    else:
-        review.delete()
-        return Response('Delete success', status=status.HTTP_204_NO_CONTENT)
+
+    elif request.user and request.user.is_authenticated:
+        if request.method == 'PUT':
+            serializer = ReviewSerializer(data=request.data, instance=review)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+        else:
+            review.delete()
+            return Response('Delete success', status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'POST'])
-def review_comment_create_or_list(request, review_pk):
+@api_view(['POST'])
+@renderer_classes([JSONRenderer])
+def review_likes(request, movie_pk, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
 
-    if request.method == 'GET':
-        comments = review.comments.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
-
+    if review.like_users.filter(pk=request.user.pk).exists():
+        review.like_users.remove(request.user)
     else:
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(review=review)
-            return Response(serializer.data)
+        review.like_users.add(request.user)
+
+    data = {
+        'like_count': len(review.like_users.all()),
+        'is_liked': review.like_users.filter(pk=request.user.pk).exists()
+    }
+
+    return Response(data)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def review_comment_detail_or_update_delete(request, review_pk, comment_pk):
-    review = get_object_or_404(Review, pk=review_pk)
-    comment = get_object_or_404(Comment, pk=comment_pk)
 
-    if request.method == 'GET':
-        serializer = CommentSerializer(review)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = CommentSerializer(data=request.data, instance=comment)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-    else:
-        review.delete()
-        return Response('Delete success', status=status.HTTP_204_NO_CONTENT)
+# @api_view(['GET', 'POST'])
+# def review_comment_create_or_list(request, review_pk):
+#     review = get_object_or_404(Review, pk=review_pk)
+#
+#     if request.method == 'GET':
+#         comments = review.comments.all()
+#         serializer = CommentSerializer(comments, many=True)
+#         return Response(serializer.data)
+#
+#     else:
+#         serializer = CommentSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save(review=review)
+#             return Response(serializer.data)
+#
+#
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def review_comment_detail_or_update_delete(request, review_pk, comment_pk):
+#     review = get_object_or_404(Review, pk=review_pk)
+#     comment = get_object_or_404(Comment, pk=comment_pk)
+#
+#     if request.method == 'GET':
+#         serializer = CommentSerializer(review)
+#         return Response(serializer.data)
+#
+#     elif request.method == 'PUT':
+#         serializer = CommentSerializer(data=request.data, instance=comment)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data)
+#     else:
+#         review.delete()
+#         return Response('Delete success', status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
