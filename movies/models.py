@@ -70,6 +70,8 @@ class Movie(models.Model):
         models.IntegerField(),
         blank=True
     )
+    runtime = models.IntegerField(default=120)
+    tagline = models.TextField(null=True)
 
     def __str__(self):
         return f'{self.id}: {self.title}'
@@ -91,9 +93,8 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-    title = models.CharField(max_length=100)
     content = models.TextField()
-    rank = models.PositiveIntegerField(default=0)
+    rank = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(
@@ -108,7 +109,7 @@ class Review(models.Model):
     )
 
     def __str__(self):
-        return f'{self.pk}: {self.title}'
+        return f'{self.pk}: {self.content}'
 
 
 class Comment(models.Model):

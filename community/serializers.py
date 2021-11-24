@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CommentListSerializer(serializers.ModelSerializer):
+class CommentViewSerializer(serializers.ModelSerializer):
 
     class UserSerializer(serializers.ModelSerializer):
 
@@ -33,6 +33,13 @@ class CommentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'content', 'author', 'created_at', 'updated_at')
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
 
 
 class ArticleSerializer(serializers.ModelSerializer):

@@ -1,12 +1,23 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from ..models import Movie, Review, Comment
+from accounts.models import Profile
+
+User = get_user_model()
 
 
 class ReviewListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'title', 'author',)
+        fields = ('id',)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -16,18 +27,26 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class ReviewViewSerializer(serializers.ModelSerializer):
 
-    class MovieSerializer(serializers.ModelSerializer):
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar',)
+
+        profile = ProfileSerializer(read_only=True)
 
         class Meta:
-            model = Movie
-            fields = ('id', 'title', 'vote_average', 'overview', 'genre_ids', 'poster_path')
+            model = User
+            fields = ('id', 'username', 'profile')
 
-    movie = MovieSerializer(read_only=True)
-    comment = CommentSerializer(read_only=True)
+    comments = CommentSerializer(read_only=True, many=True)
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Review
         fields = '__all__'
-        read_only_fields = ('user', 'username', 'movie_id', 'comment_id', 'like_users')
+        read_only_fields = ()

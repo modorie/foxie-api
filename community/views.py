@@ -7,7 +7,10 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Article, Comment
-from .serializers import ArticleSerializer, ArticleViewSerializer, ArticleListSerializer, CommentSerializer, CommentListSerializer
+from .serializers import (
+    ArticleSerializer, ArticleViewSerializer, ArticleListSerializer,
+    CommentSerializer, CommentViewSerializer, CommentListSerializer
+)
 
 
 @api_view(['GET', 'POST'])
@@ -81,20 +84,26 @@ def comment_list_or_create(request, article_pk):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['PUT', 'DELETE'])
-def comment_update_or_delete(request, article_pk, comment_pk):
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])
+def comment_detail_update_or_delete(request, article_pk, comment_pk):
     article = get_object_or_404(Article, pk=article_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
 
-    if request.method == 'PUT':
-        serializer = CommentSerializer(data=request.data, instance=comment)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = CommentViewSerializer(comment)
+        return Response(serializer.data)
 
-    elif request.method == 'DELETE':
-        comment.delete()
-        return Response('delete success', status=status.HTTP_204_NO_CONTENT)
+    elif request.user and request.user.is_authenticated:
+        if request.method == 'PUT':
+            serializer = CommentSerializer(data=request.data, instance=comment)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+
+        elif request.method == 'DELETE':
+            comment.delete()
+            return Response('delete success', status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])

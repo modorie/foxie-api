@@ -21,8 +21,8 @@ class Profile(models.Model):
         related_name='profile'
     )
 
-    nickname = models.CharField(max_length=30, unique=True, blank=False)
-    avatar = models.ImageField(null=True, upload_to='avatars/')
+    nickname = models.CharField(max_length=30, blank=False)
+    avatar = models.TextField(null=True)
     tags = ArrayField(
         models.CharField(max_length=10),
         null=True,
@@ -30,20 +30,20 @@ class Profile(models.Model):
     content = models.TextField(blank=True)
     followers = models.ManyToManyField('self', symmetrical=False, related_name='followings')
 
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.nickname = self.user.username
-
+    # def save(self, *args, **kwargs):
+    #     if self.pk is None:
+    #         self.nickname = self.user.username
+    #
     def __str__(self):
         return f'{self.pk} : {self.nickname}'
 
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+#
+#
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.profile.save()

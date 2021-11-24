@@ -16,6 +16,6 @@ urlpatterns = [
     path('community/<int:article_pk>/comments/', views.comment_list_or_create),
     # PUT /articles/1/comments/1/
     # DELETE /articles/1/comments/1/
-    path('community/<int:article_pk>/comments/<int:comment_pk>/', views.comment_update_or_delete),
+    path('community/<int:article_pk>/comments/<int:comment_pk>/', views.comment_detail_update_or_delete),
     path('community/<int:article_pk>/comments/<int:comment_pk>/likes/', views.comment_likes),
 ]
