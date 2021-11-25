@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
@@ -26,6 +27,14 @@ def article_list_or_create(request):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def article_popular(request):
+    articles = Article.objects.all().annotate(likes=Count('like_users')).order_by('-likes')[:3]
+    serializer = ArticleViewSerializer(articles, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

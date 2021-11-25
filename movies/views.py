@@ -41,7 +41,7 @@ def movie_detail(request, movie_pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def review_feed_new(request):
-    reviews = Review.objects.order_by('-pk')[:100]
+    reviews = Review.objects.order_by('-pk')[:50]
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
@@ -49,7 +49,7 @@ def review_feed_new(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def review_feed_popular(request):
-    reviews = Review.objects.all().annotate(likes=Count('like_users')).order_by('-likes')[:100]
+    reviews = Review.objects.all().annotate(likes=Count('like_users')).order_by('-likes')[:50]
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
@@ -158,11 +158,8 @@ def review_comment_detail_or_update_delete(request, movie_pk, review_pk, comment
 
 
 @api_view(['GET'])
-# TODO: 가입한 유저만 볼 수 있도록 변경
-# @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 def recommendations_by_followings(request):
-    # TODO: request.user로 변경
     target_user = User.objects.get(id=request.user.id)
 
     followings = target_user.profile.followings.all()
@@ -190,7 +187,6 @@ def recommendations_by_followings(request):
 
 
 @api_view(['GET'])
-# @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 def recommendations_by_actors(request):
     target_user = User.objects.get(id=request.user.id)
@@ -236,7 +232,6 @@ def recommendations_by_actors(request):
 
 
 @api_view(['GET'])
-# @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 def recommendations_by_movies(request):
     target_user = User.objects.get(id=request.user.id)
