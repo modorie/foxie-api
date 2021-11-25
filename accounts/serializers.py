@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Subquery, Count, F
+from django.contrib.postgres.aggregates import ArrayAgg
 
 from rest_framework import serializers
 
@@ -41,15 +42,19 @@ class ProfileViewSerializer(serializers.ModelSerializer):
         return movies.values('id', 'title', 'vote_average', 'poster_path')
 
     def get_favorite_genres(self, obj):
-        genre_counts = obj.user.movies_review.all().values('movie__genre_ids').annotate(genre=F('movie__genre_ids__name')).annotate(count=Count('movie__genre_ids'))
+        genre_counts = obj.user.movies_review.all().values('movie__genre_ids')\
+            .annotate(genre=F('movie__genre_ids__name')).annotate(count=Count('movie__genre_ids'))\
+            .annotate(movies=ArrayAgg('movie'))
         return genre_counts
 
     def get_favorite_actors(self, obj):
-        actors_counts = obj.user.movies_review.all().values('movie__actors').annotate(genre=F('movie__actors__name')).annotate(count=Count('movie__actors'))
+        actors_counts = obj.user.movies_review.all().values('movie__actors')\
+            .annotate(actor=F('movie__actors__name')).annotate(count=Count('movie__actors'))
         return actors_counts
 
     def get_favorite_directors(self, obj):
-        actors_counts = obj.user.movies_review.all().values('movie__directors').annotate(genre=F('movie__directors__name')).annotate(count=Count('movie__directors'))
+        actors_counts = obj.user.movies_review.all().values('movie__directors')\
+            .annotate(name=F('movie__directors__name')).annotate(count=Count('movie__directors'))
         return actors_counts
 
     class Meta:
