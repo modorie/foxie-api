@@ -33,7 +33,7 @@ class ProfileViewSerializer(serializers.ModelSerializer):
     favorite_directors = serializers.SerializerMethodField()
 
     def get_reviews(self, obj):
-        reviews = list(obj.user.movies_review.all().values())
+        reviews = list(obj.user.movies_review.all().values().annotate(movie=F('movie_id')))
         return reviews
 
     def get_movies(self, obj):
