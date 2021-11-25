@@ -26,7 +26,6 @@ class Command(BaseCommand):
                 if User.objects.filter(id=user_id).exists():
                     Review.objects.create(
                         movie=Movie.objects.get(id=movie_id),
-                        title=fake.sentence(),
                         content=fake.paragraph(),
                         rank=rank,
                         author=User.objects.get(id=user_id),

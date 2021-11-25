@@ -38,13 +38,21 @@ class Command(BaseCommand):
         ),
         seeder.execute()
 
-        profiles = Profile.objects.all()
+        users = User.objects.all()
+
         fake = Faker()
 
+        for user in users:
+            Profile.objects.create(
+                user=user,
+                nickname=user.username,
+                tags=fake.words(),
+                content=fake.sentence(),
+            )
+
+        profiles = Profile.objects.all()
+
         for profile in profiles:
-            profile.nickname = profile.user.username
-            profile.tags = fake.words()
-            profile.content = fake.sentence()
             for follower in random.choices(profiles, k=random.randint(0, 5)):
                 profile.followers.add(follower)
             profile.save()

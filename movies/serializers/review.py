@@ -27,6 +27,28 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentViewSerializer(serializers.ModelSerializer):
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
+        class Meta:
+            model = User
+            fields = ('id', 'username', 'profile')
+
+    author = UserSerializer()
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'author', 'created_at', 'updated_at')
+
+
 class ReviewViewSerializer(serializers.ModelSerializer):
 
     class UserSerializer(serializers.ModelSerializer):

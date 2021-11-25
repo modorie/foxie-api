@@ -9,10 +9,15 @@ urlpatterns = [
     path('movies/<int:movie_pk>/reviews/<int:review_pk>/', views.review_detail_or_update_delete),
     path('movies/<int:movie_pk>/reviews/<int:review_pk>/likes/', views.review_likes),
 
-    # path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/', views.review_comment_create_or_list),
-    # path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/<int:comment_pk>/', views.review_comment_detail_or_update_delete),
+    path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/', views.review_comment_create_or_list),
+    path('movies/<int:movie_pk>/reviews/<int:review_pk>/comments/<int:comment_pk>/', views.review_comment_detail_or_update_delete),
+
+    path('movies/reviews/new/', views.review_feed_new),
+    path('movies/reviews/popular/', views.review_feed_popular),
+    path('movies/reviews/followings/', views.review_feed_followings),
 
     path('movies/recommendations/followings', views.recommendations_by_followings),
     path('movies/recommendations/actors', views.recommendations_by_actors),
     path('movies/recommendations/movies', views.recommendations_by_movies),
+    path('movies/recommendations/preview', views.recommendations_preview),
     ]

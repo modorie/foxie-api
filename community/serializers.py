@@ -35,13 +35,6 @@ class CommentViewSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'author', 'created_at', 'updated_at')
 
 
-class CommentListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Comment
-        fields = '__all__'
-
-
 class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -60,9 +53,16 @@ class ArticleListSerializer(serializers.ModelSerializer):
 
     class UserSerializer(serializers.ModelSerializer):
 
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Profile
+                fields = ('user', 'nickname', 'avatar')
+
+        profile = ProfileSerializer(read_only=True)
+
         class Meta:
             model = User
-            fields = ('id', 'username')
+            fields = ('id', 'username', 'profile')
 
     author = UserSerializer(read_only=True)
 
