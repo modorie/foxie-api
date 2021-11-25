@@ -70,7 +70,7 @@ class Movie(models.Model):
         models.IntegerField(),
         blank=True
     )
-    runtime = models.IntegerField(default=120)
+    runtime = models.IntegerField(default=120, null=True)
     tagline = models.TextField(null=True)
 
     def __str__(self):
