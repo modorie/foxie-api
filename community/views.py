@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Article, Comment
 from .serializers import (
     ArticleSerializer, ArticleViewSerializer, ArticleListSerializer,
-    CommentSerializer, CommentViewSerializer, CommentListSerializer
+    CommentSerializer, CommentViewSerializer
 )
 
 
@@ -74,7 +74,7 @@ def comment_list_or_create(request, article_pk):
 
     if request.method == 'GET':
         comments = article.comments.all()
-        serializer = CommentListSerializer(comments, many=True)
+        serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
     elif request.user and request.user.is_authenticated:

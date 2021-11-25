@@ -110,7 +110,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'foxie',
+        'NAME': 'foxie1',
 
         # TODO : 배포시 아래 설정 변경 필요
         'USER': 'admin',
