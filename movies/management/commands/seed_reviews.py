@@ -29,28 +29,12 @@ class Command(BaseCommand):
         users = User.objects.all()
         movies = Movie.objects.all()
 
-        # 리뷰 데이터를 생성하려면 아래 코드를 활성화합니다.
-        # seeder.add_entity(
-        #     Review,
-        #     number,
-        #     {
-        #         "movie": lambda x: random.choice(movies),
-        #         "author": lambda x: random.choice(users),
-        #         "rank": lambda x: random.randint(1, 10),
-        #     }
-        # ),
-        #
-        # seeder.execute()
-        #
-        # seeder = Seed.seeder()
         reviews = Review.objects.all()
 
-        # 리뷰 좋아요 추가
         for review in reviews:
             for i in range(random.randint(0, 6)):
                 review.like_users.add(random.choice(users))
 
-        # 댓글 추가
         seeder.add_entity(
             Comment,
             number,
