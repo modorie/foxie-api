@@ -102,6 +102,8 @@ $ python manage.py seed_community --number=100
 
 ![](https://i.imgur.com/KP6ZDkU.jpg)
 
+![](https://i.imgur.com/OKOenoi.png)
+
 - 전체 컨텐츠 요약
 - 영화 추천 : 사용자 활동 기반
 
@@ -111,7 +113,6 @@ $ python manage.py seed_community --number=100
 
 ![](https://i.imgur.com/6B8AOJp.png)
 
-
 ![](https://i.imgur.com/x2UTCG7.png)
 
 <br/>
@@ -120,8 +121,7 @@ $ python manage.py seed_community --number=100
 
 ![](https://i.imgur.com/tVurtrN.jpg)
 
-![](https://i.imgur.com/OKOenoi.png)
-
+![](https://i.imgur.com/rcmmfBM.jpg)
 
 - 영화 정보 캐러셀 + 카드 형식으로 제공
 - 클릭 시 상세 페이지로 이동
