@@ -107,6 +107,15 @@ $ python manage.py seed_community --number=100
 
 <br/>
 
+### 영화 검색
+
+![](https://i.imgur.com/6B8AOJp.png)
+
+
+![](https://i.imgur.com/x2UTCG7.png)
+
+<br/>
+
 ### 영화 메인 페이지
 
 ![](https://i.imgur.com/tVurtrN.jpg)
