@@ -99,7 +99,9 @@ $ python manage.py seed_community --number=100
 ## 필수 기능에 대한 설명
 
 ### 메인 페이지
+
 ![](https://i.imgur.com/KP6ZDkU.jpg)
+
 - 전체 컨텐츠 요약
 - 영화 추천 : 사용자 활동 기반
 
@@ -129,6 +131,7 @@ $ python manage.py seed_community --number=100
 <br/>
 
 ### 리뷰 피드 페이지
+
 ![](https://i.imgur.com/Y35szsw.png)
 
 ![](https://i.imgur.com/xtlmBVG.png)
@@ -140,6 +143,7 @@ $ python manage.py seed_community --number=100
 <br/>
 
 ### 커뮤니티 페이지
+
 ![](https://i.imgur.com/vRMepX3.png)
 
 ![](https://i.imgur.com/uuo0A8o.png)
@@ -166,6 +170,7 @@ $ python manage.py seed_community --number=100
 - 마크다운 및 이미지 지원
 
 <br/>
+
 ### 프로필 페이지
 
 ![](https://i.imgur.com/pgjATOT.jpg)
